@@ -6,10 +6,16 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\ClassroomController;
 use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\AttendanceController;
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+
+Route::get('/attendance/scan', [AttendanceController::class, 'showScanPage'])->name('attendance.scan');
+Route::post('/attendance/scan', [AttendanceController::class, 'scanBarcode'])->name('attendance.scan.post');
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
