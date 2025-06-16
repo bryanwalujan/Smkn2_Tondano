@@ -7,7 +7,9 @@
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
-        a { color: blue; margin-bottom: 10px; display: inline-block; }
+        a { color: blue; margin-right: 10px; }
+        .delete-form { display: inline; }
+        .delete-button { padding: 5px; background-color: #f44336; color: white; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -19,6 +21,7 @@
                 <th>NIP</th>
                 <th>Nama</th>
                 <th>Email</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -27,9 +30,18 @@
                     <td>{{ $teacher->nip }}</td>
                     <td>{{ $teacher->name }}</td>
                     <td>{{ $teacher->user->email }}</td>
+                    <td>
+                        <a href="{{ route('teachers.edit', $teacher) }}">Edit</a>
+                        <form action="{{ route('teachers.destroy', $teacher) }}" method="POST" class="delete-form">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="delete-button" onclick="return confirm('Yakin ingin menghapus guru ini?')">Hapus</button>
+                        </form>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+    <a href="{{ route('admin.dashboard') }}">Kembali ke Dashboard</a>
 </body>
 </html>

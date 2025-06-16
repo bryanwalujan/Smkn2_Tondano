@@ -6,15 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class Classroom extends Model
 {
-    protected $fillable = ['name', 'teacher_id'];
-
-    public function teacher()
-    {
-        return $this->belongsTo(Teacher::class);
-    }
+    protected $fillable = ['level', 'major', 'class_code'];
 
     public function students()
     {
         return $this->hasMany(Student::class);
+    }
+
+    public function teachers()
+    {
+        return $this->belongsToMany(Teacher::class, 'teacher_classroom_subject')
+                    ->withPivot('subject_name');
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
+    public function getFullNameAttribute()
+    {
+        return "Kelas {$this->level} {$this->major} {$this->class_code}";
     }
 }
