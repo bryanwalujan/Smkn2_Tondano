@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Tambah Guru</title>
+    <title>Edit Guru</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 50px; }
         .form-group { margin-bottom: 15px; }
@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-    <h2>Tambah Guru</h2>
+    <h2>Edit Guru</h2>
     @if ($errors->any())
         <div class="error">
             <ul>
@@ -21,29 +21,32 @@
             </ul>
         </div>
     @endif
-    <form method="POST" action="{{ route('teachers.store') }}">
+    <form method="POST" action="{{ route('teachers.update', $teacher) }}">
         @csrf
+        @method('PUT')
         <div class="form-group">
             <label>NIP</label>
-            <input type="text" name="nip" required>
+            <input type="text" name="nip" value="{{ old('nip', $teacher->nip) }}" required>
         </div>
         <div class="form-group">
             <label>Nama</label>
-            <input type="text" name="name" required>
+            <input type="text" name="name" value="{{ old('name', $teacher->name) }}" required>
         </div>
         <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" required>
+            <input type="email" name="email" value="{{ old('email', $teacher->user->email) }}" required>
         </div>
         <div class="form-group">
             <label>Mata Pelajaran (pisahkan dengan koma)</label>
-            <input type="text" name="subjects" placeholder="Contoh: Matematika, Bahasa Inggris" required>
+            <input type="text" name="subjects" value="{{ old('subjects', implode(', ', $selectedSubjects)) }}" placeholder="Contoh: Matematika, Bahasa Inggris" required>
         </div>
         <div class="form-group">
             <label>Kelas</label>
             <select name="classrooms[]" multiple required>
                 @foreach ($classrooms as $classroom)
-                    <option value="{{ $classroom->id }}">{{ $classroom->full_name }}</option>
+                    <option value="{{ $classroom->id }}" {{ in_array($classroom->id, $selectedClassrooms) ? 'selected' : '' }}>
+                        {{ $classroom->full_name }}
+                    </option>
                 @endforeach
             </select>
         </div>

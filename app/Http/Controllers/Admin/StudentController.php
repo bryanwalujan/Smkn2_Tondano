@@ -50,4 +50,40 @@ class StudentController extends Controller
 
         return redirect()->route('students.index')->with('success', 'Siswa berhasil ditambahkan.');
     }
+
+    public function edit(Student $student)
+    {
+        $classrooms = Classroom::all();
+        return view('admin.students.edit', compact('student', 'classrooms'));
+    }
+
+    public function update(Request $request, Student $student)
+    {
+        $request->validate([
+            'nis' => 'required|unique:students,nis,' . $student->id,
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,' . $student->user_id,
+            'classroom_id' => 'required|exists:classrooms,id',
+        ]);
+
+        $student->update([
+            'nis' => $request->nis,
+            'name' => $request->name,
+            'classroom_id' => $request->classroom_id,
+        ]);
+
+        $student->user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        return redirect()->route('students.index')->with('success', 'Siswa berhasil diperbarui.');
+    }
+
+    public function destroy(Student $student)
+    {
+        $student->user->delete(); // Hapus akun pengguna terkait
+        $student->delete(); // Hapus data siswa
+        return redirect()->route('students.index')->with('success', 'Siswa berhasil dihapus.');
+    }
 }

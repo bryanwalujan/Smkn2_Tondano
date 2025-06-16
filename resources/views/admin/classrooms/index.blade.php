@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Kelola Siswa</title>
+    <title>Kelola Kelas</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 50px; }
         table { border-collapse: collapse; width: 100%; }
@@ -13,31 +13,31 @@
     </style>
 </head>
 <body>
-    <h2>Kelola Siswa</h2>
-    <a href="{{ route('students.create') }}">Tambah Siswa</a>
+    <h2>Kelola Kelas</h2>
+    <a href="{{ route('classrooms.create') }}">Tambah Kelas</a>
     <table>
         <thead>
             <tr>
-                <th>NIS</th>
-                <th>Nama</th>
                 <th>Kelas</th>
-                <th>Email</th>
+                <th>Tingkat</th>
+                <th>Jurusan</th>
+                <th>Kode Kelas</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($students as $student)
+            @foreach ($classrooms as $classroom)
                 <tr>
-                    <td>{{ $student->nis }}</td>
-                    <td>{{ $student->name }}</td>
-                    <td>{{ $student->classroom->full_name ?? 'Tidak ada kelas' }}</td>
-                    <td>{{ $student->user->email }}</td>
+                    <td><a href="{{ route('classrooms.show', $classroom) }}">{{ $classroom->full_name }}</a></td>
+                    <td>{{ $classroom->level }}</td>
+                    <td>{{ $classroom->major }}</td>
+                    <td>{{ $classroom->class_code }}</td>
                     <td>
-                        <a href="{{ route('students.edit', $student) }}">Edit</a>
-                        <form action="{{ route('students.destroy', $student) }}" method="POST" class="delete-form">
+                        <a href="{{ route('classrooms.edit', $classroom) }}">Edit</a>
+                        <form action="{{ route('classrooms.destroy', $classroom) }}" method="POST" class="delete-form">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="delete-button" onclick="return confirm('Yakin ingin menghapus siswa ini?')">Hapus</button>
+                            <button type="submit" class="delete-button" onclick="return confirm('Yakin ingin menghapus kelas ini?')">Hapus</button>
                         </form>
                     </td>
                 </tr>

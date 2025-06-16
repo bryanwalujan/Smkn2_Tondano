@@ -12,6 +12,7 @@
     <h2>Dashboard Admin</h2>
     <a href="{{ route('students.index') }}">Kelola Siswa</a>
     <a href="{{ route('teachers.index') }}">Kelola Guru</a>
+    <a href="{{ route('classrooms.index') }}">Kelola Kelas</a>
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit">Logout</button>

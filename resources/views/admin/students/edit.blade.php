@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Tambah Guru</title>
+    <title>Edit Siswa</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 50px; }
         .form-group { margin-bottom: 15px; }
@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-    <h2>Tambah Guru</h2>
+    <h2>Edit Siswa</h2>
     @if ($errors->any())
         <div class="error">
             <ul>
@@ -21,34 +21,33 @@
             </ul>
         </div>
     @endif
-    <form method="POST" action="{{ route('teachers.store') }}">
+    <form method="POST" action="{{ route('students.update', $student) }}">
         @csrf
+        @method('PUT')
         <div class="form-group">
-            <label>NIP</label>
-            <input type="text" name="nip" required>
+            <label>NIS</label>
+            <input type="text" name="nis" value="{{ old('nis', $student->nis) }}" required>
         </div>
         <div class="form-group">
             <label>Nama</label>
-            <input type="text" name="name" required>
+            <input type="text" name="name" value="{{ old('name', $student->name) }}" required>
         </div>
         <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" required>
-        </div>
-        <div class="form-group">
-            <label>Mata Pelajaran (pisahkan dengan koma)</label>
-            <input type="text" name="subjects" placeholder="Contoh: Matematika, Bahasa Inggris" required>
+            <input type="email" name="email" value="{{ old('email', $student->user->email) }}" required>
         </div>
         <div class="form-group">
             <label>Kelas</label>
-            <select name="classrooms[]" multiple required>
+            <select name="classroom_id" required>
                 @foreach ($classrooms as $classroom)
-                    <option value="{{ $classroom->id }}">{{ $classroom->full_name }}</option>
+                    <option value="{{ $classroom->id }}" {{ $student->classroom_id == $classroom->id ? 'selected' : '' }}>
+                        {{ $classroom->full_name }}
+                    </option>
                 @endforeach
             </select>
         </div>
         <button type="submit">Simpan</button>
     </form>
-    <a href="{{ route('teachers.index') }}">Kembali</a>
+    <a href="{{ route('students.index') }}">Kembali</a>
 </body>
 </html>
