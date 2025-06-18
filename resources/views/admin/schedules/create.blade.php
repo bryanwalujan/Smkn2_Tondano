@@ -2,6 +2,8 @@
 <html lang="id">
 <head>
     <title>Tambah Jadwal</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; margin: 50px; }
         .form-group { margin-bottom: 15px; }
@@ -11,6 +13,7 @@
     </style>
 </head>
 <body>
+    @include('layouts.navbar-admin')
     <h2>Tambah Jadwal untuk {{ $classroom->full_name }}</h2>
     @if ($errors->any())
         <div class="error">

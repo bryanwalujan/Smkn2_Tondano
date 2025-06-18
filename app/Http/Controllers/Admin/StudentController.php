@@ -8,7 +8,9 @@ use App\Models\User;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class StudentController extends Controller
 {
@@ -29,26 +31,46 @@ class StudentController extends Controller
         $request->validate([
             'nis' => 'required|unique:students',
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users,email',
             'classroom_id' => 'required|exists:classrooms,id',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make(Str::random(8)),
-            'role' => 'student',
-        ]);
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->nis), // Password set to NIS
+                'role' => 'student',
+            ]);
 
-        Student::create([
-            'nis' => $request->nis,
-            'name' => $request->name,
-            'barcode' => Str::random(12),
-            'classroom_id' => $request->classroom_id,
-            'user_id' => $user->id,
-        ]);
+            $barcodeId = rand(100000, 999999);
+            $student = Student::create([
+                'nis' => $request->nis,
+                'name' => $request->name,
+                'barcode' => $barcodeId,
+                'classroom_id' => $request->classroom_id,
+                'user_id' => $user->id,
+            ]);
 
-        return redirect()->route('students.index')->with('success', 'Siswa berhasil ditambahkan.');
+            // Ensure qrcodes directory exists
+            if (!File::exists(public_path('qrcodes'))) {
+                File::makeDirectory(public_path('qrcodes'), 0755, true);
+            }
+
+            // Generate QR Code for student
+            QrCode::format('svg')
+                  ->size(400)
+                  ->margin(3)
+                  ->errorCorrection('H')
+                  ->color(0, 75, 150) // Sama seperti TeacherController
+                  ->backgroundColor(245, 245, 245) // Sama seperti TeacherController
+                  ->generate((string)$barcodeId, public_path('qrcodes/student_'.$barcodeId.'.svg'));
+
+            return redirect()->route('students.index')->with('success', 'Siswa berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            Log::error('Error creating student: '.$e->getMessage());
+            return back()->withInput()->with('error', 'Gagal menambahkan siswa: ' . $e->getMessage());
+        }
     }
 
     public function edit(Student $student)
@@ -66,24 +88,57 @@ class StudentController extends Controller
             'classroom_id' => 'required|exists:classrooms,id',
         ]);
 
-        $student->update([
-            'nis' => $request->nis,
-            'name' => $request->name,
-            'classroom_id' => $request->classroom_id,
-        ]);
+        try {
+            $student->update([
+                'nis' => $request->nis,
+                'name' => $request->name,
+                'classroom_id' => $request->classroom_id,
+            ]);
 
-        $student->user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-        ]);
+            $student->user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+            ]);
 
-        return redirect()->route('students.index')->with('success', 'Siswa berhasil diperbarui.');
+            // Regenerate QR Code if needed
+            if (!File::exists(public_path('qrcodes/student_'.$student->barcode.'.svg'))) {
+                QrCode::format('svg')
+                      ->size(400)
+                      ->margin(3)
+                      ->errorCorrection('H')
+                      ->color(0, 75, 150)
+                      ->backgroundColor(245, 245, 245)
+                      ->generate((string)$student->barcode, public_path('qrcodes/student_'.$student->barcode.'.svg'));
+            }
+
+            return redirect()->route('students.index')->with('success', 'Siswa berhasil diperbarui.');
+        } catch (\Exception $e) {
+            Log::error('Error updating student: '.$e->getMessage());
+            return back()->withInput()->with('error', 'Gagal memperbarui siswa: ' . $e->getMessage());
+        }
     }
 
     public function destroy(Student $student)
     {
-        $student->user->delete(); // Hapus akun pengguna terkait
-        $student->delete(); // Hapus data siswa
-        return redirect()->route('students.index')->with('success', 'Siswa berhasil dihapus.');
+        try {
+            $qrCodePath = public_path('qrcodes/student_'.$student->barcode.'.svg');
+            if (File::exists($qrCodePath)) {
+                try {
+                    File::delete($qrCodePath);
+                } catch (\Exception $e) {
+                    Log::error('Error deleting QR code: '.$e->getMessage());
+                }
+            }
+
+            if ($student->user) {
+                $student->user->delete();
+            }
+            $student->delete();
+
+            return redirect()->route('students.index')->with('success', 'Siswa berhasil dihapus.');
+        } catch (\Exception $e) {
+            Log::error('Error deleting student: '.$e->getMessage());
+            return back()->with('error', 'Gagal menghapus siswa: ' . $e->getMessage());
+        }
     }
 }
