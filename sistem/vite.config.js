@@ -10,4 +10,12 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    server: {
+        hmr: {
+            overlay: false // Menonaktifkan overlay error
+        },
+        watch: {
+            ignored: ['**/public/qrcodes/*'] // Mengabaikan perubahan di folder qrcodes
+        }
+    }
 });

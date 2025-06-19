@@ -1,3 +1,19 @@
+<h1 align="center">Hey 👋What's Up?</h1>
+
+###
+
+<div align="center">
+  <img height="200" src="https://media.tenor.com/ouQzDmgC9CwAAAAi/miku-vocaloid.gif"  />
+</div>
+
+###
+
+<h2 align="center">✨ Built with Passion by Zonatan Sihombing & Bryan Walujan✨</h2>
+
+<p align="center">
+  👨‍💻 Full-stack Developer | Code Artisan | Laravel Enthusiast <br>
+</p>
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
