@@ -2,6 +2,8 @@
 <html lang="id">
 <head>
     <title>Detail Kelas</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; margin: 50px; }
         table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
@@ -11,6 +13,7 @@
     </style>
 </head>
 <body>
+    @include('layouts.navbar-admin')
     <h2>Detail Kelas: {{ $classroom->full_name }}</h2>
     <p>Jumlah Siswa: {{ $classroom->students->count() }}</p>
     <h3>Daftar Siswa</h3>
